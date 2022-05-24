@@ -268,6 +268,11 @@ def place_order(request):
 
     except:
         if request.user.is_authenticated:
+            current_user = request.user.username
+            customer = Profile.objects.get(nickname=current_user)
+            form = OrderForm(initial={
+                'btc_balance': customer.btc_balance, 'usd_balance': customer.usd_balance})
+            context = {'form': form}
             return render(request, 'orders.html', context)
         else:
             return render(request, 'orders.html')
