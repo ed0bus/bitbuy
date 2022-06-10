@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-from decouple import config
 from pathlib import Path
 import os
 
@@ -27,7 +26,7 @@ SECRET_KEY = 'django-insecure-l6h&9*8p5yx*6px3puae8bzzs%vce=2m=_76fa6)hrvj)((u#a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ancient-tundra-18008.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1'] 
 
 # Application definition
 
@@ -83,12 +82,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'exchange',
-        'CLIENT': {
-            'host': 'mongodb+srv://edo93:canegatto93@cluster0.jystz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'},
-        'authMechanism': 'SCRAM-SHA-1',
 
-    }
-}
+    }}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

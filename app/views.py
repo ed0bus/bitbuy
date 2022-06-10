@@ -8,6 +8,7 @@ from django.http import JsonResponse
 import json
 from django.core import serializers
 import random
+from bson.objectid import ObjectId
 
 
 def signup(request):
@@ -73,8 +74,9 @@ def place_order(request):
                                                      order_type=order_type, order_status='OPENED')
                     messages.success(
                         request, 'Orders successfully created.. Your Order has been added to the order book')
+                    # three possible conditions for SELL order
                     while new_order.order_status == 'OPENED':
-                        # make a new query everytime the new order is opened to check if there's a matching open order base on time priority
+                        # make a new query everytime the new order is opened to check if there's a matching open order based on time priority
                         matching_buy_order = Order.objects.filter(price__gte=price, order_type='BUY',
                                                                   order_status='OPENED').exclude(
                             profile=current_user).earliest('datetime')
@@ -93,11 +95,13 @@ def place_order(request):
                             # update balances
                             y = matching_buy_order.profile_id  # find buyer nickname
                             buyer = Profile.objects.get(nickname=y)
-                            customer.usd_balance = customer.usd_balance + (quantity * average_price)
+                            customer.usd_balance = customer.usd_balance + \
+                                                   (quantity * average_price)
                             customer.btc_balance -= quantity
                             customer.save(
                                 update_fields=['usd_balance', 'btc_balance'])
-                            buyer.usd_balance = buyer.usd_balance - (quantity * average_price)
+                            buyer.usd_balance = buyer.usd_balance - \
+                                                (quantity * average_price)
                             buyer.btc_balance += quantity
                             buyer.save(
                                 update_fields=['usd_balance', 'btc_balance'])
@@ -172,11 +176,12 @@ def place_order(request):
                                                      order_type=order_type, order_status='OPENED')
                     messages.success(
                         request, 'Orders successfully created.. Your Order has been added to the order book')
+                    # three possible conditions for BUY order
                     while new_order.order_status == 'OPENED':
                         matching_sell_order = Order.objects.filter(price__lte=price, order_type='SELL',
                                                                    order_status='OPENED').exclude(
                             profile=current_user).earliest('datetime')
-                        #if quantity is equal
+                        # if quantity is equal
                         if round(new_order.quantity, 1) == round(matching_sell_order.quantity, 1):
                             new_order.order_status = 'CLOSED'
                             average_price = (
@@ -200,7 +205,7 @@ def place_order(request):
                                 update_fields=['usd_balance', 'btc_balance'])
                             messages.success(
                                 request, 'Matching sell order with same quantity found ... Order Completed')
-                        #if quantity is minor
+                        # if quantity is minor
                         if new_order.quantity < matching_sell_order.quantity and new_order.order_status == 'OPENED':
                             new_order.order_status = 'CLOSED'
                             average_price = (
@@ -208,11 +213,13 @@ def place_order(request):
                             new_order.price = average_price
                             new_order.save(
                                 update_fields=['order_status', 'price'])
-                            matching_sell_order.quantity = round((matching_sell_order.quantity - new_order.quantity), 2)
+                            matching_sell_order.quantity = round(
+                                (matching_sell_order.quantity - new_order.quantity), 2)
                             matching_sell_order.save(
                                 update_fields=['quantity'])
                             seller_nickname = matching_sell_order.profile_id  # y is equal to seller name
-                            seller = Profile.objects.get(nickname=seller_nickname)
+                            seller = Profile.objects.get(
+                                nickname=seller_nickname)
                             filled_sell = Order.objects.create(quantity=new_order.quantity, price=average_price,
                                                                profile=seller,
                                                                order_type='SELL', order_status='CLOSED')
@@ -230,7 +237,8 @@ def place_order(request):
 
                         if new_order.quantity > matching_sell_order.quantity and new_order.order_status == 'OPENED':
                             print('yes is greater than matching sell order quantity')
-                            new_order.quantity = round(new_order.quantity - matching_sell_order.quantity, 2)
+                            new_order.quantity = round(
+                                new_order.quantity - matching_sell_order.quantity, 2)
                             new_order.save(update_fields=['quantity'])
                             average_price = (
                                                     new_order.price + matching_sell_order.price) / 2
@@ -263,17 +271,24 @@ def place_order(request):
 
         return render(request, 'orders.html', context)
 
-
     except:
-        if request.user.is_authenticated and Profile.objects.get(nickname=request.user.username):
-            current_user = request.user.username
-            customer = Profile.objects.get(nickname=current_user)
-            form = OrderForm(initial={
-                'btc_balance': customer.btc_balance, 'usd_balance': customer.usd_balance})
-            context = {'form': form}
-            return render(request, 'orders.html', context)
-        else:
+        # profile is not created for admin user
+        if request.user.is_authenticated and request.user.is_superuser:
+            messages.warning(
+                request, 'You are not able to place an order as admin user!')
             return render(request, 'orders.html')
+        # user is not logged in
+        elif request.user.is_authenticated == False:
+            return render(request, 'orders.html')
+        # user is autheticated but profile has been deleted or blocked by administrator
+        elif request.user.is_authenticated and Profile.objects.filter(nickname=current_user).exists() == False:
+            messages.warning(
+                request,
+                'Your profile has been deleted by an admin or temporarly blocked, try to send a ticket for further informations!')
+            return render(request, 'orders.html')
+        # else return new form with updated balances
+        else:
+            return render(request, 'orders.html', context)
 
 
 def orderbook(request):
@@ -282,9 +297,8 @@ def orderbook(request):
     pretty_json = json.loads(data.replace("\'", ''))
     return JsonResponse(pretty_json, safe=False)
 
-    # return JsonResponse(data, safe=False)
 
-
+# Orders overview
 def overview(request):
     try:
         current_user = request.user.username
@@ -325,3 +339,10 @@ def overview(request):
                        'actual_usd': usd_balance, 'actual_btc': btc_balance})
     except:
         return render(request, 'overview.html')
+
+
+# Delete an order
+def delete_order(request, order_id):
+    order = Order.objects.get(pk=ObjectId(order_id))
+    order.delete()
+    return redirect('overview')

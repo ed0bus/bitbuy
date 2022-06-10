@@ -37,6 +37,7 @@ h1 {
     <th>{{btc_gains}}</th>
     <th>{{usd_gains_prc}}</th>
     <th>{{btc_gains_prc}}</th>
+
     </tbody>
 </table>
 
@@ -58,13 +59,12 @@ h1 {
     {% load app_tags %}
     {% for order in open_orders %}
     <tr>
-        <td>{{order|mongo_id}}</td>
+        <td>{{order.pk}}</td>
         <td>{{order.datetime}}</td>
         <td>{{order.order_type}}</td>
         <td>{{order.price}}</td>
         <td>{{order.quantity}}</td>
-
-
+        <td><a href="{% url 'delete-order' order.pk %}" class="btn btn-outline-danger btn-sm">Delete</a></td>
     </tr>
     {% endfor %}
     </tbody>
