@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-l6h&9*8p5yx*6px3puae8bzzs%vce=2m=_76fa6)hrvj)((u#a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1'] 
+ALLOWED_HOSTS = ['ancient-tundra-18008.herokuapp.com']
 
 # Application definition
 
@@ -82,6 +82,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'exchange',
+        'CLIENT': {
+            'host': 'mongodb+srv://edo93:canegatto93@cluster0.jystz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'},
+        'authMechanism': 'SCRAM-SHA-1',
 
     }}
 
