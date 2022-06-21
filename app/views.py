@@ -165,13 +165,12 @@ def place_order(request):
                             else:
                                 customer.usd_balance = (
                                         customer.usd_balance + filled_order.quantity * average_price)
-                                customer.btc_balance = (
-                                        customer.btc_balance - filled_order.quantity)
+                                customer.btc_balance -= filled_order.quantity
                                 customer.save(
                                     update_fields=['usd_balance', 'btc_balance'])
                                 buyer.usd_balance = buyer.usd_balance - \
                                                     (filled_order.quantity * average_price)
-                                buyer.btc_balance = buyer.btc_balance + filled_order.quantity
+                                buyer.btc_balance += filled_order.quantity
                                 buyer.save(
                                     update_fields=['usd_balance', 'btc_balance'])
                             messages.success(
@@ -270,7 +269,7 @@ def place_order(request):
                             else:
                                 customer.usd_balance = customer.usd_balance - \
                                                        filled_order.quantity * filled_order.price
-                                customer.btc_balance = customer.btc_balance + filled_order.quantity
+                                customer.btc_balance += filled_order.quantity
                                 customer.save(update_fields=[
                                     'usd_balance', 'btc_balance'])
                                 seller.usd_balance = seller.usd_balance + \
