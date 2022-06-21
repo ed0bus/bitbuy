@@ -127,20 +127,22 @@ def place_order(request):
                             # create a closed order for the buyer with the filled quantity
                             Order.objects.create(quantity=new_order.quantity, price=average_price, profile=buyer,
                                                  order_type='BUY', order_status='CLOSED')
-
-                            customer.usd_balance = (
-                                    customer.usd_balance + new_order.quantity * average_price)
-                            customer.btc_balance = (
-                                    customer.btc_balance - new_order.quantity)
-                            customer.save(
-                                update_fields=['usd_balance', 'btc_balance'])
-                            buyer.usd_balance = buyer.usd_balance - \
-                                                (new_order.quantity * average_price)
-                            buyer.btc_balance = buyer.btc_balance + new_order.quantity
-                            buyer.save(
-                                update_fields=['usd_balance', 'btc_balance'])
-                            messages.success(
-                                request, 'Matching sell order found ... Order Completed')
+                            if buyer.nickname == customer.nickname:
+                                pass
+                            else:
+                                customer.usd_balance = (
+                                        customer.usd_balance + new_order.quantity * average_price)
+                                customer.btc_balance = (
+                                        customer.btc_balance - new_order.quantity)
+                                customer.save(
+                                    update_fields=['usd_balance', 'btc_balance'])
+                                buyer.usd_balance = buyer.usd_balance - \
+                                                    (new_order.quantity * average_price)
+                                buyer.btc_balance = buyer.btc_balance + new_order.quantity
+                                buyer.save(
+                                    update_fields=['usd_balance', 'btc_balance'])
+                                messages.success(
+                                    request, 'Matching sell order found ... Order Completed')
 
                         if new_order.quantity > matching_buy_order.quantity and new_order.order_status == 'OPENED':
                             new_order.quantity = new_order.quantity - matching_buy_order.quantity
@@ -158,17 +160,20 @@ def place_order(request):
                                                                 order_type='SELL', order_status='CLOSED')
                             y = matching_buy_order.profile_id
                             buyer = Profile.objects.get(nickname=y)
-                            customer.usd_balance = (
-                                    customer.usd_balance + filled_order.quantity * average_price)
-                            customer.btc_balance = (
-                                    customer.btc_balance - filled_order.quantity)
-                            customer.save(
-                                update_fields=['usd_balance', 'btc_balance'])
-                            buyer.usd_balance = buyer.usd_balance - \
-                                                (filled_order.quantity * average_price)
-                            buyer.btc_balance = buyer.btc_balance + filled_order.quantity
-                            buyer.save(
-                                update_fields=['usd_balance', 'btc_balance'])
+                            if buyer.nickname == customer.nickname:
+                                pass
+                            else:
+                                customer.usd_balance = (
+                                        customer.usd_balance + filled_order.quantity * average_price)
+                                customer.btc_balance = (
+                                        customer.btc_balance - filled_order.quantity)
+                                customer.save(
+                                    update_fields=['usd_balance', 'btc_balance'])
+                                buyer.usd_balance = buyer.usd_balance - \
+                                                    (filled_order.quantity * average_price)
+                                buyer.btc_balance = buyer.btc_balance + filled_order.quantity
+                                buyer.save(
+                                    update_fields=['usd_balance', 'btc_balance'])
                             messages.success(
                                 request, 'Matching sell order found ... Order Completed')
 
@@ -196,14 +201,17 @@ def place_order(request):
                                 update_fields=['order_status', 'price'])
                             y = matching_sell_order.profile_id  # find seller
                             seller = Profile.objects.get(nickname=y)
-                            customer.usd_balance = customer.usd_balance - quantity * average_price
-                            customer.btc_balance += quantity
-                            customer.save(
-                                update_fields=['usd_balance', 'btc_balance'])
-                            seller.usd_balance = seller.usd_balance + quantity * average_price
-                            seller.btc_balance -= quantity
-                            seller.save(
-                                update_fields=['usd_balance', 'btc_balance'])
+                            if seller.nickname == customer.nickname:
+                                pass
+                            else:
+                                customer.usd_balance = customer.usd_balance - quantity * average_price
+                                customer.btc_balance += quantity
+                                customer.save(
+                                    update_fields=['usd_balance', 'btc_balance'])
+                                seller.usd_balance = seller.usd_balance + quantity * average_price
+                                seller.btc_balance -= quantity
+                                seller.save(
+                                    update_fields=['usd_balance', 'btc_balance'])
                             messages.success(
                                 request, 'Matching sell order with same quantity found ... Order Completed')
                         # if quantity is minor
@@ -224,15 +232,18 @@ def place_order(request):
                             filled_sell = Order.objects.create(quantity=new_order.quantity, price=average_price,
                                                                profile=seller,
                                                                order_type='SELL', order_status='CLOSED')
-                            customer.usd_balance = customer.usd_balance - new_order.quantity * average_price
-                            customer.btc_balance += new_order.quantity
-                            customer.save(
-                                update_fields=['usd_balance', 'btc_balance'])
-                            seller.usd_balance = seller.usd_balance + \
-                                                 filled_sell.quantity * filled_sell.price
-                            seller.btc_balance -= filled_sell.quantity
-                            seller.save(update_fields=[
-                                'usd_balance', 'btc_balance'])
+                            if seller.nickname == customer.nickname:
+                                pass
+                            else:
+                                customer.usd_balance = customer.usd_balance - new_order.quantity * average_price
+                                customer.btc_balance += new_order.quantity
+                                customer.save(
+                                    update_fields=['usd_balance', 'btc_balance'])
+                                seller.usd_balance = seller.usd_balance + \
+                                                     filled_sell.quantity * filled_sell.price
+                                seller.btc_balance -= filled_sell.quantity
+                                seller.save(update_fields=[
+                                    'usd_balance', 'btc_balance'])
                             messages.success(
                                 request, 'Matching sell order found ... Your order is completed!')
 
@@ -254,16 +265,19 @@ def place_order(request):
                                                                 price=average_price,
                                                                 profile=customer, order_type='BUY',
                                                                 order_status='CLOSED')
-                            customer.usd_balance = customer.usd_balance - \
-                                                   filled_order.quantity * filled_order.price
-                            customer.btc_balance = customer.btc_balance + filled_order.quantity
-                            customer.save(update_fields=[
-                                'usd_balance', 'btc_balance'])
-                            seller.usd_balance = seller.usd_balance + \
-                                                 matching_sell_order.quantity * average_price
-                            seller.btc_balance = seller.btc_balance - matching_sell_order.quantity
-                            seller.save(update_fields=[
-                                'usd_balance', 'btc_balance'])
+                            if seller.nickname == customer.nickname:
+                                pass
+                            else:
+                                customer.usd_balance = customer.usd_balance - \
+                                                       filled_order.quantity * filled_order.price
+                                customer.btc_balance = customer.btc_balance + filled_order.quantity
+                                customer.save(update_fields=[
+                                    'usd_balance', 'btc_balance'])
+                                seller.usd_balance = seller.usd_balance + \
+                                                     matching_sell_order.quantity * average_price
+                                seller.btc_balance = seller.btc_balance - matching_sell_order.quantity
+                                seller.save(update_fields=[
+                                    'usd_balance', 'btc_balance'])
                             messages.success(
                                 request, 'Matching sell order found ... Part of your order is completed')
 
@@ -279,13 +293,14 @@ def place_order(request):
                 request, 'You are not able to place an order as admin user!')
             return render(request, 'orders.html')
         # user is not logged in
-        elif request.user.is_authenticated == False:
+        elif request.user.is_authenticated is False:
             return render(request, 'orders.html')
         # user is autheticated but profile has been deleted or blocked by administrator
-        elif request.user.is_authenticated and Profile.objects.filter(nickname=current_user).exists() == False:
+        elif request.user.is_authenticated and Profile.objects.filter(nickname=current_user).exists() is False:
             messages.warning(
                 request,
-                'Your profile has been deleted by an admin or temporarly blocked, try to send a ticket for further informations!')
+                'Your profile has been deleted by an admin or temporarly blocked, try to send a ticket for further '
+                'informations!')
             return render(request, 'orders.html')
         # else return new form with updated balances
         else:
