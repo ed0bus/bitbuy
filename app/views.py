@@ -78,8 +78,7 @@ def place_order(request):
                     while new_order.order_status == 'OPENED':
                         # make a new query everytime the new order is opened to check if there's a matching open order based on time priority
                         matching_buy_order = Order.objects.filter(price__gte=price, order_type='BUY',
-                                                                  order_status='OPENED').exclude(
-                            profile=current_user).earliest('datetime')
+                                                                  order_status='OPENED').earliest('datetime')
 
                         if round(matching_buy_order.quantity, 1) == round(new_order.quantity, 1):
                             new_order.order_status = 'CLOSED'
@@ -179,8 +178,7 @@ def place_order(request):
                     # three possible conditions for BUY order
                     while new_order.order_status == 'OPENED':
                         matching_sell_order = Order.objects.filter(price__lte=price, order_type='SELL',
-                                                                   order_status='OPENED').exclude(
-                            profile=current_user).earliest('datetime')
+                                                                   order_status='OPENED').earliest('datetime')
                         # if quantity is equal
                         if round(new_order.quantity, 1) == round(matching_sell_order.quantity, 1):
                             new_order.order_status = 'CLOSED'
