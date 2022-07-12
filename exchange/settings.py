@@ -85,7 +85,6 @@ DATABASES = {
         'CLIENT': {
             'host': 'mongodb+srv://edo93:canegatto93@cluster0.jystz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'},
         'authMechanism': 'SCRAM-SHA-1',
-
     }}
 
 # Password validation
