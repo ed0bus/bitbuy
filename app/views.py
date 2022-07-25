@@ -70,7 +70,7 @@ def place_order(request):
                                                                order_type='BUY')])  # sum of current user total usd pending in buy orders
 
                 if order_type == 'SELL' and quantity < customer.btc_balance and quantity < (
-                        customer.btc_balance - pending_orders_btc):
+                        customer.btc_balance - pending_orders_btc) and quantity>0:
                     # create a new order first using the form: the order is added to the djongo database
                     new_order = Order.objects.create(quantity=quantity, price=price, profile=customer,
                                                      order_type=order_type, order_status='OPENED')
@@ -171,7 +171,7 @@ def place_order(request):
                                 request, 'Matching sell order found ... Order Completed')
 
                 elif order_type == 'BUY' and customer.usd_balance > price * quantity and (price * quantity) < (
-                        customer.usd_balance - pending_orders_usd):
+                        customer.usd_balance - pending_orders_usd) and quantity>0:
                     new_order = Order.objects.create(quantity=quantity, price=price, profile=customer,
                                                      order_type=order_type, order_status='OPENED')
                     messages.success(
@@ -271,7 +271,10 @@ def place_order(request):
                                 request, 'Matching sell order found ... Part of your order is completed')
 
                 else:
-                    messages.success(request, 'Your balance is insufficient!')
+                    if quantity < 0:
+                        messages.success(request, 'You can not fill an order with negative quantity')
+                    else: 
+                        messages.success(request, 'Your balance is insufficient!')
 
         return render(request, 'orders.html', context)
 
