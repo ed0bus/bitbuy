@@ -1,0 +1,109 @@
+{%  extends 'base.html' %}
+{% block content %}
+
+<style>
+
+h1 {
+  font-family: Redressed;
+  font-size: 170%;
+  color: black;
+  margin-top: 30px;
+}
+</style>
+
+
+{% if user.is_authenticated %}
+
+<h1>Gain and Loss</h1>
+<table class='table  table-striped  table-bordered table-hover'>
+    <thead>
+    <tr>
+        <th>Initial USD Balance </th>
+        <th>Initial BTC Balance </th>
+        <th>Current USD Balance</th>
+        <th>Current BTC Balance</th>
+        <th>Usd Gains</th>
+        <th>Btc Gains</th>
+        <th>Usd Gain %</th>
+        <th>Btc Gain %</th>
+    </tr>
+    </thead>
+    <tbody>
+    <th>{{initial_usd}}</th>
+    <th>{{initial_btc}}</th>
+    <th>{{actual_usd}}</th>
+    <th>{{actual_btc}}</th>
+    <th>{{usd_gains}}</th>
+    <th>{{btc_gains}}</th>
+    <th>{{usd_gains_prc}}</th>
+    <th>{{btc_gains_prc}}</th>
+
+    </tbody>
+</table>
+
+
+<h1>Opened Orders of {{user.username}}</h1>
+<table class='table  table-striped  table-bordered table-hover'>
+    <thead>
+    <tr>
+        <th>Order Identification Number</th>
+        <th>Order Time</th>
+        <th>Order Type</th>
+        <th>Price</th>
+        <th>Quantity</th>
+
+
+    </tr>
+    </thead>
+    <tbody>
+    {% load app_tags %}
+    {% for order in open_orders %}
+    <tr>
+        <td>{{order.pk}}</td>
+        <td>{{order.datetime}}</td>
+        <td>{{order.order_type}}</td>
+        <td>{{order.price}}</td>
+        <td>{{order.quantity}}</td>
+        <td><a href="{% url 'delete-order' order.pk %}" class="btn btn-outline-danger btn-sm">Delete</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h1>Closed Orders of {{user.username}}</h1>
+
+<table class='table  table-striped  table-bordered table-hover'>
+    <thead>
+    <tr>
+        <th>Order Identification Number</th>
+        <th>Order Time</th>
+        <th>Order Type</th>
+        <th>Price</th>
+        <th>Quantity</th>
+
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for order in closed_orders %}
+    <tr>
+        <td>{{order|mongo_id}}</td>
+        <td>{{order.datetime}}</td>
+        <td>{{order.order_type}}</td>
+        <td>{{order.price}}</td>
+        <td>{{order.quantity}}</td>
+
+
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+
+<h2> You should login in or register first to access this page! <p1/>
+
+{% endif %}
+
+
+{% endblock %}

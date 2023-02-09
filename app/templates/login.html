@@ -1,0 +1,62 @@
+{%  extends 'base.html' %}
+{% block content %}
+
+<style>
+h1 {
+  font-family: Redressed;
+  font-size: 250%;
+  color: black;
+  margin-top: 70px;
+}
+
+form{ margin:0px;
+      min-width: 300px;
+      max-width: 500px;
+     }
+</style>
+
+<h1>User Login</h1>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <div class="container-fluid p-0">
+        <div class="alert {{ message.tags }} alert-success" role="alert">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+
+{% if user.is_authenticated %}
+<h2>You're already logged in as {{ user.username }}! Return to <a href="{% url 'admin:index'  %}">Buy/Sell</a> or <a
+        href="{% url 'logout'  %}">logout!</a></h2>
+
+{% else %}
+
+
+<form action="{% url 'signin' %}" method=POST>
+
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" name="username" aria-describedby="emailHelp">
+
+    </div>
+    <div class="mb-3">
+        <label  class="form-label">Password</label>
+        <input type="password" class="form-control" name="password">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+</form>
+
+{% endif %}
+
+{% endblock %}
+

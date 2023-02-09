@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style type="text/css">
+    form {
+        color: black;
+        font-size: 170%;
+        margin-bottom: 30px;
+        margin-top: 50px;
+    }
+
+    p {
+        margin-top: 50px;
+        font-size: 40px;
+    }
+</style>
+
+
+
+{% if user.is_authenticated %}
+
+<p>Welcome to Bitbuy {{ user.username }}! Complete the form to create your order!</p>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <div class="container-fluid p-0">
+        <div class="alert {{ message.tags }} alert-warning" role="alert">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+<body>
+
+    <form action="." method="post">
+
+        {% csrf_token %}
+
+
+        <table> {{form.as_table}} </table>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+</body>
+
+{% else %}
+
+<h2> You should login in or register first to access this page!
+    <h2/>
+
+    {% endif %}
+
+
+    {% endblock %}
