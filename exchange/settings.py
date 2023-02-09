@@ -29,7 +29,7 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["bitbuy.herokuapp.com"]
+ALLOWED_HOSTS = ["https://bitbuy.onrender.com"]
 
 # Application definition
 
